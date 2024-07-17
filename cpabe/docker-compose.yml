@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  org0-cpabe:
+    build:
+      context: ./org0-cpabe
+    ports:
+      - "8080:8080"
+    networks:
+      cpabe-network:
+        ipv4_address: 192.168.96.2
+
+  org1-cpabe:
+    build:
+      context: ./org1-cpabe
+    ports:
+      - "8081:8081"
+    depends_on:
+      - org0-cpabe
+    command: ["java", "-cp", "target/org1-cpabe-0.0.1-SNAPSHOT-jar-with-dependencies.jar", "com.example.Main", "org1"]
+    networks:
+      cpabe-network:
+        ipv4_address: 192.168.96.3
+
+  org2-cpabe:
+    build:
+      context: ./org2-cpabe
+    ports:
+      - "8082:8082"
+    depends_on:
+      - org0-cpabe
+    command: ["java", "-cp", "target/org2-cpabe-0.0.1-SNAPSHOT-jar-with-dependencies.jar", "com.example.Main", "org2"]
+    networks:
+      cpabe-network:
+        ipv4_address: 192.168.96.4
+
+networks:
+  cpabe-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.96.0/24
+
